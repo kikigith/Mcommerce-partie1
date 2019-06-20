@@ -118,5 +118,17 @@ public class ProductController {
     		throw new EmptyProductListException("Aucun produits enregistré");
     	return mJsonProduits;
     }
+    
+    //Trier les produits par ordre alphabétique
+    @GetMapping(value="/ProduitsTrier")
+    public MappingJacksonValue trierProduitsParOrdreAlphabétique() {
+    	List<Product> products=productDao.findByOrderByNomAsc();
+    	MappingJacksonValue mJsonProduits=new MappingJacksonValue(products);
+    	if(mJsonProduits==null) 
+    		throw new EmptyProductListException("Aucun produits enregistré");
+    	return mJsonProduits;
+    	
+    }
+    
 
 }
