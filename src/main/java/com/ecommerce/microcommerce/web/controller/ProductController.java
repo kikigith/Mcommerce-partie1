@@ -2,6 +2,7 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.web.exceptions.EmptyProductListException;
 import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+
+import java.lang.module.FindException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -102,7 +106,17 @@ public class ProductController {
 
         return productDao.chercherUnProduitCher(400);
     }
-
-
+    
+    //Afficher les produits avec leurs marges
+    @GetMapping(value="/AdminProduits")
+    public MappingJacksonValue calulerMargeProduit() {
+    	HashMap<Product, Integer> margeProduits=new HashMap<Product,Integer>();
+    	Iterable<Product> products=productDao.findAll();
+    	products.forEach(p -> margeProduits.put(p, p.getPrix()-p.getPrixAchat()));
+    	MappingJacksonValue mJsonProduits=new MappingJacksonValue(margeProduits);
+    	if(mJsonProduits==null) 
+    		throw new EmptyProductListException("Aucun produits enregistré");
+    	return mJsonProduits;
+    }
 
 }
